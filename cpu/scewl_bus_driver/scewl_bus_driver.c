@@ -63,8 +63,12 @@ int scewl_register() {
 
   msg.dev_id = SCEWL_ID;
   msg.op = SCEWL_SSS_REG;
-    
-    printf("registration msg: %s\n", (char*)&msg);
+
+  fprintf(stderr, "\n");
+  fprintf(stderr, "registration msg: ");
+  for (int i = 0 ; i < sizeof(msg); i++)
+    fprintf(stderr, "registration msg: %c\n", ((char*)&msg)[i]);
+  fprintf(stderr, "\n");
   // send registration
   if (scewl_send(SCEWL_SSS_ID, sizeof(msg), (char *)&msg) == SCEWL_ERR) {
     fprintf(logfp, "failed to register\n");
