@@ -1,0 +1,241 @@
+{
+  "name": "NAME",
+  "sock_root": "/socks",
+  "sss_sock": "sss.sock",
+  "faa_sock": "faa.sock",
+  "mitm_sock": "mitm.sock",
+  "sc_probe_sock": "sc_probe.sock",
+  "sc_recvr_sock": "sc_recvr.sock",
+
+  "attacker_dz": "attacker_dz",
+  "attacker_cpu": "ectf/cpu:challenge3_13",
+  "muted_id": 11,
+  "downed_uav": "downed_uav",
+  "spoofed_sed": "spoofed_uav",
+
+  "seds":
+  [
+    {
+      "sed": "attack_c2",
+      "name": "c2",
+      "scewl_id": 10,
+      "custom": "PRNG_SEED=PRNGSD ATCK_DZ_ID=11 ATCK_DZ_X=0x1337 ATCK_DZ_Y=0x1337 TRST_DZ_ID=12 PACKAGE_FLAG=PKGFL"
+    },
+    {
+      "sed": "attack_dz",
+      "name": "attacker_dz",
+      "scewl_id": 11,
+      "custom": ""
+    },
+    {
+      "sed": "attack_dz",
+      "name": "dz",
+      "scewl_id": 12,
+      "custom": ""
+    },
+    {
+      "sed": "attack_uav",
+      "name": "downed_uav",
+      "scewl_id": 13,
+      "custom": "RECOVERY_FLAG=ectf{recovery_dummy} DROP_FLAG=ectf{drop_dummy} UAVID_FLAG=ectf{uavid_dummy} NO_FLY_ZONE_FLAG=ectf{nofly_dummy} C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "spoofed_uav",
+      "scewl_id": 14,
+      "custom": "RECOVERY_FLAG=ectf{recovery_dummy} DROP_FLAG=ectf{drop_dummy} UAVID_FLAG=ectf{uavid_dummy} NO_FLY_ZONE_FLAG=ectf{nofly_dummy} C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav1",
+      "scewl_id": 15,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav2",
+      "scewl_id": 16,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav3",
+      "scewl_id": 17,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav4",
+      "scewl_id": 18,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav5",
+      "scewl_id": 19,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav6",
+      "scewl_id": 20,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav7",
+      "scewl_id": 21,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav8",
+      "scewl_id": 22,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav9",
+      "scewl_id": 23,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav10",
+      "scewl_id": 24,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav11",
+      "scewl_id": 25,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav12",
+      "scewl_id": 26,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav13",
+      "scewl_id": 27,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav14",
+      "scewl_id": 28,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav15",
+      "scewl_id": 29,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav16",
+      "scewl_id": 30,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav17",
+      "scewl_id": 31,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav18",
+      "scewl_id": 32,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav19",
+      "scewl_id": 33,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav20",
+      "scewl_id": 34,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav21",
+      "scewl_id": 35,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav22",
+      "scewl_id": 36,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav23",
+      "scewl_id": 37,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav24",
+      "scewl_id": 38,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav25",
+      "scewl_id": 39,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav26",
+      "scewl_id": 40,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav27",
+      "scewl_id": 41,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav28",
+      "scewl_id": 42,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav29",
+      "scewl_id": 43,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav30",
+      "scewl_id": 44,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav31",
+      "scewl_id": 45,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    },
+    {
+      "sed": "attack_uav",
+      "name": "uav32",
+      "scewl_id": 46,
+      "custom": "PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"
+    }
+  ]
+}

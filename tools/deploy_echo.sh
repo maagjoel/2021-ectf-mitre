@@ -30,13 +30,11 @@ export SC_RECVR_SOCK=sc_recvr.sock
 
 # create deployment
 make create_deployment
-make add_sed SED=echo_server SCEWL_ID=10 NAME=echo_server
-make add_sed SED=echo_server SCEWL_ID=11 NAME=echo_server
-make add_sed SED=echo_client SCEWL_ID=12 NAME=echo_client CUSTOM='TGT_ID=10'
-make add_sed SED=echo_client SCEWL_ID=13 NAME=echo_client CUSTOM='TGT_ID=10'
-make add_sed SED=echo_client SCEWL_ID=14 NAME=echo_client CUSTOM='TGT_ID=10'
-make add_sed SED=echo_client SCEWL_ID=15 NAME=echo_client CUSTOM='TGT_ID=10'
-make add_sed SED=echo_client SCEWL_ID=16 NAME=echo_client CUSTOM='TGT_ID=10'
+make add_sed SED=attack_c2 SCEWL_ID=10 NAME=c2 CUSTOM=' "PRNG_SEED=PRNGSD ATCK_DZ_ID=11 ATCK_DZ_X=0x1337 ATCK_DZ_Y=0x1337 TRST_DZ_ID=12 PACKAGE_FLAG=PKGFL" '
+make add_sed SED=attack_dz SCEWL_ID=12 NAME=dz
+make add_sed SED=attack_uav SCEWL_ID=37 NAME=uav1 CUSTOM='"PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"'
+make add_sed SED=attack_uav SCEWL_ID=29 NAME=uav2 CUSTOM='"PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"'
+make add_sed SED=attack_uav SCEWL_ID=22 NAME=uav3 CUSTOM='"PACKAGE_FLAG=PKGFL RECOVERY_FLAG=RCVFL DROP_FLAG=DRPFL UAVID_FLAG=UAVFL NO_FLY_ZONE_FLAG=NFZFL C2_ID=10 ALT_FLOOR=100 ALT_CEIL=200"'
 
 # launch deployment
 make deploy

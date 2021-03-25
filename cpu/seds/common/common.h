@@ -1,15 +1,3 @@
-/*
- * 2021 Collegiate eCTF
- * Common SED code header
- * Ben Janis
- *
- * (c) 2021 The MITRE Corporation
- *
- * This source file is part of an example system for MITRE's 2021 Embedded System CTF (eCTF).
- * This code is being provided only for educational purposes for the 2021 MITRE eCTF competition,
- * and may not meet MITRE standards for quality. Use this code at your own risk!
- */
-
 #ifndef COMMON_H
 #define COMMON_H
 
@@ -17,73 +5,84 @@
 
 #include <string.h>
 
+#define DLEN 0x1000
 #define FLEN 32
+#define PLEN FLEN
+#define EMERGENCY_LEN 64
 #define STR_(X) #X
 #define STR(X) STR_(X)
-#define TAG TY STR(INSEC_ID) ":" STR(SCEWL_ID) ":"
+#define TAG STR(SCEWL_ID) ":"
 #define FMT_MSG(M) TAG M ";"
 
-#define ASSERT(C, F) if (!(C)) { send_faa_str(F); return; }
-#define SLEEP(MSEC) for (int _i = 0; _i < MSEC * 50000; _i++);
-
-#define send_faa_str(M) scewl_send(SCEWL_FAA_ID, strlen(M), M)
 
 /**************************** message types ****************************/
 
-enum src_ty_t {CMD = 'C', UAV = 'U', CHK = 'K', DRP = 'D', ADM = 'A'};
-enum cmd_ty_t {LOGIN_CMD = 'I', LOGOUT_CMD = 'O', BRDCST_CMD = 'B',
-               CHK_CMD = 'K', DRP_CMD = 'D', UAV_CMD = 'U', ADMIN_CMD = 'L'};
+enum src_ty_t { CMD = 'C', UAV = 'U', DRP = 'D' };
+enum cmd_ty_t { REQUEST_CMD = 'R', MISSION_CMD = 'M', LOCATION_CMD = 'L', DECONFLICT_CMD = 'D',
+                DZ_SYN_CMD = 'S', DZ_ACK_CMD = 'A', PACKAGE_CMD = 'P', EMERGENCY_CMD = 'E' };
+enum direction_t { OUTGOING = 1, RETURNING = -1 };
+
+typedef uint32_t hash_t;
 
 typedef struct state_t {
-  scewl_id_t kid;
-  scewl_id_t did;
   uint16_t x;
   uint16_t y;
-  uint16_t x_tgt;
-  uint16_t y_tgt;
+  uint16_t z;
+  uint16_t tgt_dz_x;
+  uint16_t tgt_dz_y;
+  scewl_id_t tgt_dz_id;
+  uint32_t prng_state;
   int registered;
+  int direction;
+  char package[PLEN];
 } state_t;
 
-typedef struct msg_hdr_t {
-  char src;
-  char cmd;
-  char flag[FLEN];
-} msg_hdr_t;
-
-typedef struct location_t {
+typedef struct coord_t {
   uint16_t x;
   uint16_t y;
-} location_t;
+  uint16_t z;
+} coord_t;
 
-typedef struct mission_msg_t {
-  msg_hdr_t hdr;
-  scewl_id_t kid;
-  scewl_id_t did;
-  location_t loc;
-} mission_msg_t;
+typedef struct mission_t {
+  scewl_id_t dz_id;  
+  coord_t coord;
+  char package[PLEN];
+} mission_t;
 
-typedef struct brdcst_msg_t {
-  msg_hdr_t hdr;
-  scewl_id_t uid;
-  location_t loc;
-} brdcst_msg_t;
+typedef struct scewl_location_t {
+  coord_t coord;
+  char uav_id[FLEN]; 
+} scewl_location_t;
 
-typedef struct id_msg_t {
-  msg_hdr_t hdr;
+typedef struct msg_t {
+  char src;
+  char cmd;
+  union {
+    mission_t mission;
+    scewl_location_t location;
+    char package[PLEN];
+    char emergency[EMERGENCY_LEN];
+  } msg;
+  hash_t hash;
+} msg_t;
+
+typedef struct faa_location_msg_t {
   scewl_id_t id;
-} id_msg_t;
-
-typedef struct admin_msg_t {
-  msg_hdr_t hdr;
-  char login[18];
-} admin_msg_t;
-
+  coord_t location;
+} faa_location_msg_t;
+	
 /**************************** utility functions ****************************/
 
-void fill_hdr(msg_hdr_t *hdr, int cmd);
+void send_msg(msg_t *msg, scewl_id_t tgt_id, char cmd);
 
-void send_id(scewl_id_t id, scewl_id_t tgt_id, char cmd);
+int recv_msg(msg_t *buf, scewl_id_t *src_id, scewl_id_t *tgt_id, size_t len, int blocking); 
 
 void send_faa_str(char *msg);
+
+int reg();
+
+void dereg();
+
+uint32_t prng(state_t *s);
 
 #endif // COMMON_H
