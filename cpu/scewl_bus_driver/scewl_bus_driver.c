@@ -26,6 +26,8 @@
 //#include "../../controller/lm3s/lm3s_cmsis.h"
 //#include "../../controller/controller.h"
 
+#define send_str(M) send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, strlen(M), M)
+
 int sock;
 FILE *logfp;
 
@@ -64,11 +66,13 @@ int scewl_register() {
   msg.dev_id = SCEWL_ID;
   msg.op = SCEWL_SSS_REG;
 
+
+
   fprintf(stderr, "\n");
   fprintf(stderr, "registration msg: ");
-  for (int i = 0 ; i < sizeof(msg); i++)
-    fprintf(stderr, "%c\n", ((char*)&msg)[i]);
-  fprintf(stderr, "\n");
+
+  fprintf(stderr, "%hu", msg.dev_id );
+
   // send registration
   if (scewl_send(SCEWL_SSS_ID, sizeof(msg), (char *)&msg) == SCEWL_ERR) {
     fprintf(logfp, "failed to register\n");
