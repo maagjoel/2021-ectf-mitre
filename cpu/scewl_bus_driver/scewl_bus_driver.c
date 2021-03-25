@@ -220,8 +220,9 @@ int scewl_send(scewl_id_t tgt_id, uint16_t len, char *data) {
 
   // send header
   written = write(sock, &hdr, sizeof(hdr));
+  fprintf(stderr, "ERROR1\n");
   if (written < sizeof(hdr)) {
-    fprintf(stderr, "ERROR\n");
+    fprintf(stderr, "ERROR2\n");
     return SCEWL_ERR;
   }
 

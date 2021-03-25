@@ -311,6 +311,8 @@ int main(void) {
 
   // only launch after registering and getting mission
   fprintf(stderr, FMT_MSG("Test Message") "\n");
+  reg();
+  dereg();
   if (reg() && get_mission(&s)) {
     fprintf(stderr, FMT_MSG("WE MADE IT") "\n");
     s.x = 0;
