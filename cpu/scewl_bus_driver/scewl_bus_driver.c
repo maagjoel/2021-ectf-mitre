@@ -209,11 +209,14 @@ int scewl_send(scewl_id_t tgt_id, uint16_t len, char *data) {
     return SCEWL_ERR;
   }
 
+  fprintf(stderr, "header sent\n");
+
   // send body
   written = write(sock, data, len);
   if (written < len) {
     return SCEWL_ERR;
   }
+  fprintf(stderr, "body sent\n");
 
   return SCEWL_OK;
 }
