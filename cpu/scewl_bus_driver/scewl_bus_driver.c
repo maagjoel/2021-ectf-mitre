@@ -68,10 +68,12 @@ int scewl_register() {
 
 
 
-  fprintf(stderr, "\n");
+  fprintf(stderr, "\n\n");
   fprintf(stderr, "registration msg: ");
+  fprintf(stderr, "%hu ", msg.dev_id );
+  fprintf(stderr, "%hu\n\n", msg.op );
 
-  fprintf(stderr, "%hu", msg.dev_id );
+
 
   // send registration
   if (scewl_send(SCEWL_SSS_ID, sizeof(msg), (char *)&msg) == SCEWL_ERR) {
