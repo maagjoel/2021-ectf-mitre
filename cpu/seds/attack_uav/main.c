@@ -192,26 +192,32 @@ int get_mission(state_t *s) {
   // C2 get mission request
   do {
     // resend request message every 16 received messages
+    fprintf(stderr, FMT_MSG("IN DO") "\n");
     if ((recvd_msgs++ & 0xf) == 0) {
       if (retries++ == 3) {
         send_faa_str("UAV failed to connect to C2");
         return 0;
       }
+    fprintf(stderr, FMT_MSG("BEFORE SEND MESSAGE") "\n");  
       // no body to message
       send_msg(&request, C2_ID, REQUEST_CMD);
     }
 
+    fprintf(stderr, FMT_MSG("BEFORE RECIEVE MESSAGE") "\n");  
     // get a response
     len = recv_msg((msg_t *)data, &src_id, &tgt_id, DLEN, 1);
   } while (src_id != C2_ID); // ignore non-C2 messages
 
+  fprintf(stderr, FMT_MSG("BEFORE HANDLE MESSAGE") "\n");  
   handle_message(s, (msg_t *)data, src_id, tgt_id, len);
 
+  fprintf(stderr, FMT_MSG("BEFORE CORRECT RESPONSE") "\n"); 
   // check for correct response
   if (!s->registered || !s->tgt_dz_x || !s->tgt_dz_y) {
     send_faa_str("UAV failed to get mission from C2");
     return 0;
   }
+  fprintf(stderr, FMT_MSG("BEFORE RETURN 1") "\n"); 
 
   return 1;
 }
@@ -306,7 +312,7 @@ int main(void) {
   // only launch after registering and getting mission
   fprintf(stderr, FMT_MSG("Test Message") "\n");
   if (reg() && get_mission(&s)) {
-    fprintf(stderr, FMT_MSG("Test Message 2") "\n");
+    fprintf(stderr, FMT_MSG("WE MADE IT") "\n");
     s.x = 0;
     s.y = 0;
     s.z = ALT_FLOOR;
