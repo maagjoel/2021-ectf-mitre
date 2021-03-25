@@ -43,19 +43,15 @@ make deploy
 python3 tools/faa.py $SOCK_ROOT/$FAA_SOCK &
 
 # launch seds detatched
-make launch_sed_d NAME=echo_server SCEWL_ID=10
+make launch_sed_d NAME=c2 SCEWL_ID=10
 sleep 1
-make launch_sed_d NAME=echo_server SCEWL_ID=11
+make launch_sed_d NAME=dz SCEWL_ID=12
 sleep 1
-make launch_sed_d NAME=echo_client SCEWL_ID=12
+make launch_sed_d NAME=uav1 SCEWL_ID=37
 sleep 1
-make launch_sed_d NAME=echo_client SCEWL_ID=13
+make launch_sed_d NAME=uav2 SCEWL_ID=29
 sleep 1
-make launch_sed_d NAME=echo_client SCEWL_ID=14
-sleep 1
-make launch_sed_d NAME=echo_client SCEWL_ID=15
-sleep 1
-make launch_sed_d NAME=echo_client SCEWL_ID=16
+make launch_sed_d NAME=uav3 SCEWL_ID=22
 
 # bring transceiver back into foreground
 fg
