@@ -304,6 +304,7 @@ int main(void) {
   s.prng_state = SCEWL_ID;
 
   // only launch after registering and getting mission
+  fprintf(stderr, FMT_MSG("Test Message") "\n");
   if (reg() && get_mission(&s)) {
     s.x = 0;
     s.y = 0;
