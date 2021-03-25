@@ -61,11 +61,13 @@ int scewl_register() {
   msg.dev_id = SCEWL_ID;
   msg.op = SCEWL_SSS_REG;
 
+    fprintf(stderr, "registration msg: %s\n", (char*)&msg);
   // send registration
   if (scewl_send(SCEWL_SSS_ID, sizeof(msg), (char *)&msg) == SCEWL_ERR) {
     fprintf(logfp, "failed to register\n");
     return SCEWL_ERR;
   }
+
 
   // receive response
   if (scewl_recv((char *)&msg, &dummy, &dummy, sizeof(msg), 1) == SCEWL_ERR) {
