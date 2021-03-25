@@ -74,7 +74,6 @@ int scewl_register() {
   fprintf(stderr, "%hu\n\n", msg.op );
 
 
-
   // send registration
   if (scewl_send(SCEWL_SSS_ID, sizeof(msg), (char *)&msg) == SCEWL_ERR) {
     fprintf(logfp, "failed to register\n");
@@ -222,6 +221,7 @@ int scewl_send(scewl_id_t tgt_id, uint16_t len, char *data) {
   // send header
   written = write(sock, &hdr, sizeof(hdr));
   if (written < sizeof(hdr)) {
+    fprintf(stderr, "ERROR\n");
     return SCEWL_ERR;
   }
 
