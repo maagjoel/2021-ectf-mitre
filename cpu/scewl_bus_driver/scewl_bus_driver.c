@@ -202,6 +202,7 @@ int scewl_send(scewl_id_t tgt_id, uint16_t len, char *data) {
   hdr.len    = len;
   
   fprintf(stderr, "in scewl_send\n");
+  fprintf(stderr, "body data: %s\n", data);
 
   // send header
   written = write(sock, &hdr, sizeof(hdr));
