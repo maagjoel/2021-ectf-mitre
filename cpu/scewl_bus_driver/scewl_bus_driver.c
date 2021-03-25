@@ -200,6 +200,8 @@ int scewl_send(scewl_id_t tgt_id, uint16_t len, char *data) {
   hdr.src_id = SCEWL_ID;
   hdr.tgt_id = tgt_id;
   hdr.len    = len;
+  
+  fprintf(stderr, "in scewl_send\n");
 
   // send header
   written = write(sock, &hdr, sizeof(hdr));

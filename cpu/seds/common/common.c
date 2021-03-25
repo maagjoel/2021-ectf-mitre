@@ -33,7 +33,7 @@ void send_msg(msg_t *msg, scewl_id_t tgt_id, char cmd) {
   if (scewl_send(tgt_id, sizeof(msg_t), (char *)msg) == SCEWL_ERR) {
     fprintf(stderr, FMT_MSG("Error sending message!") "\n");
   }
-  fprintf(stderr, FMT_MSG("after scewl_send") "\n");
+  fprintf(stderr, "after scewl_send\n");
 }
 
 
