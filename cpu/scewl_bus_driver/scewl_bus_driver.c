@@ -233,20 +233,6 @@ int scewl_send(scewl_id_t tgt_id, uint16_t len, char *data) {
   }
   fprintf(stderr, "body sent\n");
 
-   written = write(sock, data, len);
-  if (written < len) {
-    return SCEWL_ERR;
-  }
-  fprintf(stderr, "body sent again\n");
-
-    written = write(sock, &hdr, sizeof(hdr));
-  if (written < sizeof(hdr)) {
-    fprintf(stderr, "ERROR\n");
-    return SCEWL_ERR;
-  }
-
-  fprintf(stderr, "header sent again\n");
-
   return SCEWL_OK;
 }
 
