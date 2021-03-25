@@ -11,6 +11,7 @@
  */
 
 #include "common.h"
+#include "../scewl_bus_driver/scewl_bus.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -306,7 +307,7 @@ int main(void) {
 
   scewl_init();
 
-  scewl_send(SCEWL_FAA_ID, sizeof("hello"), "hello");
+  scewl_send(SCEWL_FAA_ID, 5 , "hello");
 
   // seed prng with SCEWL_ID
   s.prng_state = SCEWL_ID;
