@@ -306,6 +306,7 @@ int main(void) {
   // only launch after registering and getting mission
   fprintf(stderr, FMT_MSG("Test Message") "\n");
   if (reg() && get_mission(&s)) {
+    fprintf(stderr, FMT_MSG("Test Message 2") "\n");
     s.x = 0;
     s.y = 0;
     s.z = ALT_FLOOR;
