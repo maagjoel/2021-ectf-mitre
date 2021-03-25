@@ -67,7 +67,7 @@ int scewl_register() {
   fprintf(stderr, "\n");
   fprintf(stderr, "registration msg: ");
   for (int i = 0 ; i < sizeof(msg); i++)
-    fprintf(stderr, "registration msg: %c\n", ((char*)&msg)[i]);
+    fprintf(stderr, "%c\n", ((char*)&msg)[i]);
   fprintf(stderr, "\n");
   // send registration
   if (scewl_send(SCEWL_SSS_ID, sizeof(msg), (char *)&msg) == SCEWL_ERR) {
