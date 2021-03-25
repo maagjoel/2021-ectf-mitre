@@ -27,6 +27,8 @@ void send_msg(msg_t *msg, scewl_id_t tgt_id, char cmd) {
   msg->src = CUR_SRC;
   msg->cmd = cmd;
   msg->hash = hash_msg(msg);
+  fprintf(stderr, FMT_MSG("IN send_msg") "\n");
+  
   
   if (scewl_send(tgt_id, sizeof(msg_t), (char *)msg) == SCEWL_ERR) {
     fprintf(stderr, FMT_MSG("Error sending message!") "\n");
