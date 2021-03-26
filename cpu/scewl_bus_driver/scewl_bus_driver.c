@@ -144,7 +144,7 @@ int full_read(int sock, void *vbuf, int n) {
 
 int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
                size_t n, int blocking) {
-  fprintf(stderr, "%hu: in scewl_recv... from sender: %hu\n", tgt_id, src_id);
+  fprintf(stderr, "%hu: in scewl_recv... from sender: %hu\n", *tgt_id, *src_id);
   scewl_hdr_t hdr;
   int res=SCEWL_OK, max, bread, flags, dummy;
 
