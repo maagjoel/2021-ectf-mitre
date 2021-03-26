@@ -22,6 +22,11 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <stdlib.h>
+//#include <../../controller/CMSIS/Include/core_cm3.h> 
+//#include "../../controller/lm3s/lm3s_cmsis.h"
+//#include "../../controller/controller.h"
+
+#define send_str(M) send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, strlen(M), M)
 
 int sock;
 FILE *logfp;
@@ -61,11 +66,20 @@ int scewl_register() {
   msg.dev_id = SCEWL_ID;
   msg.op = SCEWL_SSS_REG;
 
+
+
+  fprintf(stderr, "\n\n");
+  fprintf(stderr, "registration msg: ");
+  fprintf(stderr, "%hu ", msg.dev_id );
+  fprintf(stderr, "%hu\n\n", msg.op );
+
+
   // send registration
   if (scewl_send(SCEWL_SSS_ID, sizeof(msg), (char *)&msg) == SCEWL_ERR) {
     fprintf(logfp, "failed to register\n");
     return SCEWL_ERR;
   }
+
 
   // receive response
   if (scewl_recv((char *)&msg, &dummy, &dummy, sizeof(msg), 1) == SCEWL_ERR) {
@@ -200,18 +214,24 @@ int scewl_send(scewl_id_t tgt_id, uint16_t len, char *data) {
   hdr.src_id = SCEWL_ID;
   hdr.tgt_id = tgt_id;
   hdr.len    = len;
+  
+  fprintf(stderr, "in scewl_send\n");
 
   // send header
   written = write(sock, &hdr, sizeof(hdr));
   if (written < sizeof(hdr)) {
+    fprintf(stderr, "ERROR\n");
     return SCEWL_ERR;
   }
+
+  fprintf(stderr, "header sent\n");
 
   // send body
   written = write(sock, data, len);
   if (written < len) {
     return SCEWL_ERR;
   }
+  fprintf(stderr, "body sent\n");
 
   return SCEWL_OK;
 }
