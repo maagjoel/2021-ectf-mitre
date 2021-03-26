@@ -266,7 +266,7 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   (void)tc_hmac_final(digest, 32, &h);
 
   send_str("HMAC Key being used for sending:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, (char *)DT_hmac_key);
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 16, (char *)DT_hmac_key);
 
   send_str("Sent HMAC:");
   send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, (char *)digest);
