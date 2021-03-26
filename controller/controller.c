@@ -134,6 +134,9 @@ int send_msg(intf_t *intf, scewl_id_t src_id, scewl_id_t tgt_id, uint16_t len, c
 
 int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
 
+  send_str("Recieved data:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , data); 
+
   // Check is message exceeds max length and discard if so
   if (len > maxMsgRecLength) {
     memset(data, 0, len);
@@ -185,19 +188,25 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
       //remove padding
       for (i = sizeofDec - 1; decrypted[i] == '#'; i--,sizeofDec--) decrypted[i] = '\0';
       sizeofDec -= 10; //discard unique messageID
+
+      send_str("Decrypted message:");
+      send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeofDec , (char *)decrypted); 
       
       return send_msg(CPU_INTF, src_id, SCEWL_ID, sizeofDec, (char *)decrypted);
   }
   else
   {
     //disregard message if not authentic
-    //send_str("HMAC doesn't match. disgarding message.");
+    send_str("HMAC doesn't match. disgarding message.");
     return 0;
   }  
 
 }
 
 int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
+
+  send_str("Sent message:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , data); 
   
   //check if message exceeds buffer length and reduces to message to small length if so
   if (len > maxMsgLength) {
