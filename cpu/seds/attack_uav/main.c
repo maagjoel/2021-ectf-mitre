@@ -308,6 +308,7 @@ int main(void) {
   scewl_init();
 
   scewl_send(SCEWL_FAA_ID, 5 , "hello");
+  scewl_send(SCEWL_FAA_ID, 8 , "helloguy");
 
   // seed prng with SCEWL_ID
   s.prng_state = SCEWL_ID;
