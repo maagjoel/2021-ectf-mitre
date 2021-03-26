@@ -150,6 +150,9 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
   for (i = 0; i < n; i++) encrypted[i] = data[i];
   for (i = n; i < n + 32; i++) hmac[i - n] = data[i];
 
+  send_str("Encryption message for calculating HMAC being recieved");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, n, (char *)encrypted);
+
   // Calculate HMAC based on encryted text
   struct tc_hmac_state_struct h;
   uint8_t digest[32];
@@ -158,6 +161,9 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
   (void)tc_hmac_init(&h);
   (void)tc_hmac_update(&h, (char *)encrypted, n);
   (void)tc_hmac_final(digest, 32, &h);
+
+  send_str("HMAC Key being used for recieving:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, (char *)DT_hmac_key);
 
      send_str("Calculated HMAC:");
   send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, (char *)digest);
@@ -247,6 +253,9 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   tc_cbc_mode_encrypt(encrypted, sizeofEnc,
 	(uint8_t *)data, len , iv_buffer, &a);
 
+  send_str("Encryption message for calculating HMAC being sent");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeofEnc, (char *)encrypted);
+
   //calulate HMAC of encryoted data
   struct tc_hmac_state_struct h;
   uint8_t digest[32];
@@ -255,6 +264,9 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   (void)tc_hmac_init(&h);
   (void)tc_hmac_update(&h, (char *)encrypted, sizeofEnc);
   (void)tc_hmac_final(digest, 32, &h);
+
+  send_str("HMAC Key being used for sending:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, (char *)DT_hmac_key);
 
   send_str("Sent HMAC:");
   send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, (char *)digest);
