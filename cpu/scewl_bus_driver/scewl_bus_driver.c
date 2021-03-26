@@ -55,6 +55,7 @@ void scewl_init() {
   strncpy(addr.sun_path, sock_path, sizeof(addr.sun_path) - 1);
   if (connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_un))) {
     fprintf(logfp, "Could not connect to %s!", sock_path);
+    fprintf(stderr, "SOCK FAILED\n");
     exit(-1);
   }
 }
