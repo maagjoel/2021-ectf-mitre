@@ -44,8 +44,8 @@ void send_faa_str(char *msg) {
 
 
 int recv_msg(msg_t* msg, scewl_id_t* src_id, scewl_id_t* tgt_id, size_t len, int blocking) {
-  fprintf(stderr, FMT_MSG("in recv_msg...") "\n");
-  fprintf(stderr, "%hu in recv_msg... from sender %hu", *src_id, *tgt_id);
+  //fprintf(stderr, FMT_MSG("in recv_msg...") "\n");
+  fprintf(stderr, "%hu in recv_msg... from sender %hu\n", *tgt_id, *src_id);
   size_t size = scewl_recv((char *)msg, src_id, tgt_id, len, blocking);
   fprintf(stderr, FMT_MSG("after scewl_rec...") "\n");
 
