@@ -9,9 +9,61 @@
  * This code is being provided only for educational purposes for the 2021 MITRE eCTF competition,
  * and may not meet MITRE standards for quality. Use this code at your own risk!
  */
+void swap(char *x, char *y) {
+    char t = *x; *x = *y; *y = t;
+}
+ 
+// function to reverse buffer[i..j]
+char* reverse(char *buffer, int i, int j)
+{
+    while (i < j)
+        swap(&buffer[i++], &buffer[j--]);
+ 
+    return buffer;
+}
+ 
+// Iterative function to implement itoa() function in C
+char* itoa(unsigned long value, char* buffer, int base)
+{
+    // invalid input
+    if (base < 2 || base > 32)
+        return buffer;
+ 
+    // consider absolute value of number
+    unsigned long n = value;
+ 
+    int i = 0;
+    while (n)
+    {
+        int r = n % base;
+ 
+        if (r >= 10) 
+            buffer[i++] = 65 + (r - 10);
+        else
+            buffer[i++] = 48 + r;
+ 
+        n = n / base;
+    }
+ 
+    // if number is 0
+    if (i == 0)
+        buffer[i++] = '0';
+ 
+    // If base is 10 and value is negative, the resulting string 
+    // is preceded with a minus sign (-)
+    // With any other base, value is always considered unsigned
+    if (value < 0 && base == 10)
+        buffer[i++] = '-';
+ 
+    buffer[i] = '\0'; // null terminate string
+ 
+    // reverse the string and return it
+    return reverse(buffer, 0, i - 1);
+}
 
 #include "controller.h"
 #include <tinycrypt/constants.h>
+//#include <test_utils.h>
 #include <tinycrypt/utils.h>
 #include <tinycrypt/cbc_mode.h>
 #include <tinycrypt/hmac.h>
@@ -21,15 +73,6 @@
 #include <string.h>
 #include <stdint.h>
 
-// max buffer values
-static const int maxMsgLength = 16456;
-static const int maxMsgRecLength = 16528;
-
-//functions for implementing an integer to ascii conversion
-void swap(char *x, char *y);
-char* reverse(char *buffer, int i, int j);
-char* itoa(unsigned long value, char* buffer, int base);
-
 //temporary keys
 uint8_t key[16] = { "0123456789abcdef"};
 uint8_t DT_hmac_key[16] = { "0123456789abcdef"};
@@ -38,8 +81,8 @@ uint8_t iv[16] = { "0123456789abcdef"};
 uint8_t badKey[16] = { "0123456789abcdef"};
 
 
-uint8_t DTdigestArray[16][32]; //Saved Direct Transmissions MACs
-uint8_t BCdigestArray[16][32]; //Saved Broadcasts MACs
+uint8_t DTdigestArray[16][32]; //Saved Direct Transmissions
+uint8_t BCdigestArray[16][32]; //Saved Broadcasts
 
 unsigned long tenDigitSerial = 0;
 unsigned long msgCounter = 1;
@@ -55,15 +98,20 @@ int registered = 0;
 
 int read_msg(intf_t *intf, char *data, scewl_id_t *src_id, scewl_id_t *tgt_id,
              size_t n, int blocking) {
-
+  
+  //Check if buffer is overflowed
+  data[SCEWL_MAX_DATA_SZ - 1] = '\0'; //set last character equal to terminating value
+  if (strlen(data) > (SCEWL_MAX_DATA_SZ - 32)) { 
+    for (int i = 0; i < strlen(data); i++) intf_readb(intf, 0); //if too long, throw away message
+    n = 0; 
+  }
+    
   scewl_hdr_t hdr;
   int read, max;
-  send_str( "in read msg function" );
 
   // clear buffer and header
   memset(&hdr, 0, sizeof(hdr));
   memset(data, 0, n);
-
 
   // find header start
   do {
@@ -99,7 +147,7 @@ int read_msg(intf_t *intf, char *data, scewl_id_t *src_id, scewl_id_t *tgt_id,
   read = intf_read(intf, data, max, blocking);
 
   // throw away rest of message if too long
-  for (int i = 0; hdr.len > n && i < hdr.len - n; i++) {
+  for (int i = 0; hdr.len > max && i < hdr.len - max; i++) {
     intf_readb(intf, 0);
   }
 
@@ -134,15 +182,6 @@ int send_msg(intf_t *intf, scewl_id_t src_id, scewl_id_t tgt_id, uint16_t len, c
 
 int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
 
-  send_str("Recieved data:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , data); 
-
-  // Check is message exceeds max length and discard if so
-  if (len > maxMsgRecLength) {
-    memset(data, 0, len);
-    return 0;
-  }
-  
   // Copy data into 2 new arrays - 1 for encypted text and 1 for HMAC
   uint16_t n = len - 32;
   uint8_t encrypted[n];
@@ -160,20 +199,16 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
   (void)tc_hmac_update(&h, (char *)encrypted, n);
   (void)tc_hmac_final(digest, 32, &h);
 
-  send_str("Calculated HMAC message:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32 , (char *)digest); 
-
   if (!_compare(digest, hmac, 32)) //Check to determine if HMAC calulated matches the one sent
   {
-      // Check if MAC matches previously recieved MACs. Ignore if the same.
+      // Check if transmission matches previously recieved transmissions. Ignore if the same.
       for (int i = 0; i < 16; i++) {
         if (!_compare(digest, DTdigestArray[i], 32)) {
-          send_str( "REPEATED MESSAGE" );
-          return 0;
+          send_str("Replayed message!!!!!");
+          return 0; 
           }
       } 
 
-      //store newly recieved MAC in array
       for (int j = 15; j > 0; j--){
         for (int i = 0; i < 32; i++) DTdigestArray[j][i] = DTdigestArray[j-1][i];
       }
@@ -191,32 +226,25 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
 
       //remove padding
       for (i = sizeofDec - 1; decrypted[i] == '#'; i--,sizeofDec--) decrypted[i] = '\0';
-      sizeofDec -= 10; //discard unique messageID
-
+      sizeofDec -= 10; //disgard unique messageID
+      
       send_str("Decrypted message:");
       send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeofDec , (char *)decrypted); 
-      
       return send_msg(CPU_INTF, src_id, SCEWL_ID, sizeofDec, (char *)decrypted);
   }
   else
   {
     //disregard message if not authentic
-    send_str("HMAC doesn't match. disgarding message.");
+    //send_str("HMAC doesn't match. disgarding message.");
     return 0;
   }  
 
 }
 
 int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
+  send_str("origional message:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , data);
 
-  send_str("Origional message:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , data); 
-  
-  //check if message exceeds buffer length and reduces to message to small length if so
-  if (len > maxMsgLength) {
-    memset(data + 32, 0, len - 32);
-    len = 32;
-  } 
 
   msgCounter++; //increment message counter for unique message ID
   DT_hmac_key[11] = (u_int8_t)(tgt_id % 256); //customize HMAC for specific target SED
@@ -238,6 +266,9 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
 
   //randomize initialization vector
   for (int i = 0; i < 16; i++) iv[i] = (rand() % 256);
+  send_str("random IV:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 16 , (char *)iv);
+
 
   //encrypt data AES CBC algo implementation 
   struct tc_aes_key_sched_struct a;
@@ -258,9 +289,6 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   (void)tc_hmac_update(&h, (char *)encrypted, sizeofEnc);
   (void)tc_hmac_final(digest, 32, &h);
 
-  send_str("Sent HMAC message:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32 , (char *)digest); 
-
 
   //copy ciphertext and HMAC to new array
   uint8_t msg[sizeofEnc + 32];
@@ -268,21 +296,12 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   for (i = 0; i < sizeofEnc; i++) msg[i] = encrypted[i];
   for (i = sizeofEnc; i < sizeofEnc + 32; i++) msg[i] = digest[i - sizeofEnc];
 
-  send_str("Encrypted message:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeof(msg) , (char *)msg); 
-
   //send encrypted message
   return send_msg(RAD_INTF, SCEWL_ID, tgt_id, sizeof(msg), (char *)msg);
 }
 
 
 int handle_brdcst_recv(char* data, scewl_id_t src_id, uint16_t len) {
-
-  // Check is message exceeds max length and discard if so
-  if (len > maxMsgRecLength) {
-    memset(data, 0, len);
-    return 0;
-  }
   
   // Copy data into 2 new arrays - 1 for encypted text and 1 for HMAC
   uint16_t n = len - 32;
@@ -303,14 +322,14 @@ int handle_brdcst_recv(char* data, scewl_id_t src_id, uint16_t len) {
 
   if (!_compare(digest, hmac, 32)) //Check to determine if HMAC calulated matches the one sent
   {
-      // Check if MAC matches previously recieved MACs. Ignore if the same.
+      // Check if broadcast matches previously recieved broadcasts. Ignore if the same.
       for (int i = 0; i < 16; i++) {
         if (!_compare(digest, BCdigestArray[i], 32)) {
+          send_str("Replayed message!!!!!");
           return 0; 
           }
       } 
 
-      //store newly recieved MAC in array
       for (int j = 15; j > 0; j--){
         for (int i = 0; i < 32; i++) BCdigestArray[j][i] = BCdigestArray[j-1][i];
       }
@@ -329,9 +348,11 @@ int handle_brdcst_recv(char* data, scewl_id_t src_id, uint16_t len) {
 
       //remove padding
       for (i = sizeofDec - 1; decrypted[i] == '#'; i--,sizeofDec--) decrypted[i] = '\0';
-      sizeofDec -= 10; //discard unique messageID
+      sizeofDec -= 10; //disgard unique messageID
       
       //send message
+      send_str("Decrypted message:");
+      send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeofDec , (char *)decrypted); 
       return send_msg(CPU_INTF, src_id, SCEWL_BRDCST_ID, sizeofDec, (char *)decrypted);
   }
   else
@@ -344,13 +365,10 @@ int handle_brdcst_recv(char* data, scewl_id_t src_id, uint16_t len) {
 
 int handle_brdcst_send(char *data, uint16_t len) {
 
-  //check if message exceeds buffer length and reduces to message to small length if so
-  if (len > maxMsgLength) {
-    memset(data + 32, 0, len - 32);
-    len = 32;
-  } 
-
   msgCounter++; //increment message counter for unique message ID
+
+  send_str("origional message:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , data);
 
   //append message with unique message ID
   char tempAry[10];
@@ -368,6 +386,8 @@ int handle_brdcst_send(char *data, uint16_t len) {
 
   //randomize initialization vector
   for (int i = 0; i < 16; i++) iv[i] = (rand() % 256);
+  send_str("random IV:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 16 , (char *)iv);
   
   //Encrypt using AES CBC algo
   struct tc_aes_key_sched_struct a;
@@ -411,11 +431,10 @@ int handle_faa_send(char* data, uint16_t len) {
 
 void handle_registration(char* msg) {
   scewl_sss_msg_t *sss_msg = (scewl_sss_msg_t *)msg;
-  send_str( "in handle registration" );
   if (sss_msg->op == SCEWL_SSS_REG && sss_register()) {
-    registered = 1; send_str("registration sucesssssssssss");
+    registered = 1;
   } else if (sss_msg->op == SCEWL_SSS_DEREG && sss_deregister()) {
-    registered = 0; send_str("registration failureeeeeeeeeeeeeeeeeee" );
+    registered = 0;
   }
 }
 
@@ -441,16 +460,15 @@ int sss_register() {
   // receive response
   len = read_msg(SSS_INTF, msg2, &src_id, &tgt_id, sizeof(msg2) , 1);
 
-  for (int i = 0; i < 16; i++) {
-    key[i] = msg2[4 + i]; //get AES key from server response
-    DT_hmac_key[i] = msg2[20 + i]; //get HMAC key from server response
-    BC_hmac_key[i] = msg2[20 + i]; //get HMAC key from server response
-    iv[i] = msg2[36 + i]; //get initialization vector from server response
-  }
+  for (int i = 0; i < 16; i++) key[i] = msg2[4 + i]; //get AES key from server response
+  for (int i = 0; i < 16; i++) DT_hmac_key[i] = msg2[20 + i]; //get HMAC key from server response
+  for (int i = 0; i < 16; i++) BC_hmac_key[i] = msg2[20 + i]; //get HMAC key from server response
+  for (int i = 0; i < 16; i++) iv[i] = msg2[36 + i]; //get initialization vector from server response
   DT_hmac_key[11] = (u_int8_t)(SCEWL_ID % 256); //personalize direct transmission key based on provisoned ID
-  tenDigitSerial = DATA1; //set serial equal to provisioned registration number 
-  while (tenDigitSerial < 1000000000) tenDigitSerial *= 2; //increment if less than 10 digits
-
+  tenDigitSerial = DATA1; //set serial equal to provisioned registration number and increment if less than 10 digits
+  while (tenDigitSerial < 1000000000) tenDigitSerial *= 2;
+  send_str("provisioned IV:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 16 , (char *)iv);
 
   // notify CPU of response
   status = send_msg(CPU_INTF, src_id, tgt_id, len, msg2);
@@ -505,14 +523,10 @@ int main() {
   scewl_hdr_t hdr;
   uint16_t src_id, tgt_id;
 
-  send_str( "launched SED" );
-
   // initialize interfaces
   intf_init(CPU_INTF);
   intf_init(SSS_INTF);
   intf_init(RAD_INTF);
-
-  send_str( "interfaces initialized" );
 
   //seed randGen with provisioned Device Registration Number and msgCounter
   unsigned long randomizer = DATA1;
@@ -523,12 +537,10 @@ int main() {
   // serve forever
   while (1) {
     // register with SSS
-    send_str( "waiting to register" );
     read_msg(CPU_INTF, buf, &hdr.src_id, &hdr.tgt_id, sizeof(buf), 1);
 
     
     if (hdr.tgt_id == SCEWL_SSS_ID) {
-      send_str( "going to handle registration" );
       handle_registration(buf);
     }
 
@@ -540,6 +552,7 @@ int main() {
       if (intf_avail(CPU_INTF)) { 
         // Read message from CPU
         len = read_msg(CPU_INTF, buf, &src_id, &tgt_id, sizeof(buf), 1);
+
 
         if (tgt_id == SCEWL_BRDCST_ID) {
           handle_brdcst_send(buf, len);
@@ -561,10 +574,8 @@ int main() {
         
         if (src_id != SCEWL_ID) { // ignore our own outgoing messages
           if (tgt_id == SCEWL_BRDCST_ID) {
-            // check if FAA broadcast
-            if (src_id == SCEWL_FAA_ID) handle_faa_recv(buf, len);
-            // else receive broadcast message
-            else handle_brdcst_recv(buf, src_id, len);
+            // receive broadcast message
+            handle_brdcst_recv(buf, src_id, len);
           } else if (tgt_id == SCEWL_ID) {
             // receive unicast message
             if (src_id == SCEWL_FAA_ID) {
@@ -577,57 +588,4 @@ int main() {
       }
     }
   }
-}
-
-//functions to implement integer to ascii conversion
-void swap(char *x, char *y) {
-    char t = *x; *x = *y; *y = t;
-}
- 
-// function to reverse buffer[i..j]
-char* reverse(char *buffer, int i, int j)
-{
-    while (i < j)
-        swap(&buffer[i++], &buffer[j--]);
- 
-    return buffer;
-}
- 
-// Iterative function to implement itoa() function in C
-char* itoa(unsigned long value, char* buffer, int base)
-{
-    // invalid input
-    if (base < 2 || base > 32)
-        return buffer;
- 
-    // consider absolute value of number
-    unsigned long n = value;
- 
-    int i = 0;
-    while (n)
-    {
-        int r = n % base;
- 
-        if (r >= 10) 
-            buffer[i++] = 65 + (r - 10);
-        else
-            buffer[i++] = 48 + r;
- 
-        n = n / base;
-    }
- 
-    // if number is 0
-    if (i == 0)
-        buffer[i++] = '0';
- 
-    // If base is 10 and value is negative, the resulting string 
-    // is preceded with a minus sign (-)
-    // With any other base, value is always considered unsigned
-    if (value < 0 && base == 10)
-        buffer[i++] = '-';
- 
-    buffer[i] = '\0'; // null terminate string
- 
-    // reverse the string and return it
-    return reverse(buffer, 0, i - 1);
 }
