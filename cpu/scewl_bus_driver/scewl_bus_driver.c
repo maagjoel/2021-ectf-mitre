@@ -46,6 +46,7 @@ void scewl_init() {
   fprintf(stderr, "sock: %d\n", sock);
   if (sock < 1) {
     fprintf(logfp, "Bad socket! %d\n", sock);
+    fprintf(stderr, "BAD SOCK\n");
     exit(-1);
   }
 
@@ -55,6 +56,7 @@ void scewl_init() {
   strncpy(addr.sun_path, sock_path, sizeof(addr.sun_path) - 1);
   if (connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_un))) {
     fprintf(logfp, "Could not connect to %s!", sock_path);
+    fprintf(stderr, "BAD SOCK\n");
     exit(-1);
   }
 }
