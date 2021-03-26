@@ -134,7 +134,7 @@ int send_msg(intf_t *intf, scewl_id_t src_id, scewl_id_t tgt_id, uint16_t len, c
 int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
 
     send_str("SCEWL_ID:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 2, (char *)SCEWL_ID));
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 2, (char *)SCEWL_ID);
 
    send_str("Recieved Message:");
   send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len, data);
@@ -229,7 +229,7 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   DT_hmac_key[11] = (u_int8_t)(tgt_id % 256); //customize HMAC for specific target SED
 
   send_str("TARGET_ID:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 2, (char *)tgt_id));
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 2, (char *)tgt_id);
 
   //append message with unique message ID
   char tempAry[10]; 
