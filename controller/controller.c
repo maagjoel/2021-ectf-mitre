@@ -165,6 +165,7 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
       // Check if MAC matches previously recieved MACs. Ignore if the same.
       for (int i = 0; i < 16; i++) {
         if (!_compare(digest, DTdigestArray[i], 32)) {
+          send_str( "REPEATED MESSAGE" );
           return 0;
           }
       } 
