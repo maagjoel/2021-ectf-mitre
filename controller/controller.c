@@ -160,6 +160,9 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
   (void)tc_hmac_update(&h, (char *)encrypted, n);
   (void)tc_hmac_final(digest, 32, &h);
 
+  send_str("Calculated HMAC message:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32 , (char *)digest); 
+
   if (!_compare(digest, hmac, 32)) //Check to determine if HMAC calulated matches the one sent
   {
       // Check if MAC matches previously recieved MACs. Ignore if the same.
@@ -254,6 +257,9 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   (void)tc_hmac_init(&h);
   (void)tc_hmac_update(&h, (char *)encrypted, sizeofEnc);
   (void)tc_hmac_final(digest, 32, &h);
+
+  send_str("Sent HMAC message:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32 , (char *)digest); 
 
 
   //copy ciphertext and HMAC to new array
