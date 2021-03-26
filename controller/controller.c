@@ -530,6 +530,8 @@ int main() {
       if (intf_avail(CPU_INTF)) { 
         // Read message from CPU
         len = read_msg(CPU_INTF, buf, &src_id, &tgt_id, sizeof(buf), 1);
+        send_str("CPU message:");
+        send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , buf); 
 
         if (tgt_id == SCEWL_BRDCST_ID) {
           handle_brdcst_send(buf, len);
@@ -548,6 +550,9 @@ int main() {
       if (intf_avail(RAD_INTF)) {
         // Read message from antenna
         len = read_msg(RAD_INTF, buf, &src_id, &tgt_id, sizeof(buf), 1);
+
+        send_str("Radio message:");
+        send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , buf); 
         
         if (src_id != SCEWL_ID) { // ignore our own outgoing messages
           if (tgt_id == SCEWL_BRDCST_ID) {
