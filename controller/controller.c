@@ -486,10 +486,14 @@ int main() {
   scewl_hdr_t hdr;
   uint16_t src_id, tgt_id;
 
+  send_str( "launched SED" );
+
   // initialize interfaces
   intf_init(CPU_INTF);
   intf_init(SSS_INTF);
   intf_init(RAD_INTF);
+
+  send_str( "interfaces initialized" );
 
   //seed randGen with provisioned Device Registration Number and msgCounter
   unsigned long randomizer = DATA1;
@@ -500,6 +504,7 @@ int main() {
   // serve forever
   while (1) {
     // register with SSS
+    send_str( "waiting to register" );
     read_msg(CPU_INTF, buf, &hdr.src_id, &hdr.tgt_id, sizeof(buf), 1);
 
     
