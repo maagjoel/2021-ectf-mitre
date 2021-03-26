@@ -206,7 +206,7 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
 
 int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
 
-  send_str("Sent message:");
+  send_str("Origional message:");
   send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , data); 
   
   //check if message exceeds buffer length and reduces to message to small length if so
@@ -261,6 +261,9 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   int i;
   for (i = 0; i < sizeofEnc; i++) msg[i] = encrypted[i];
   for (i = sizeofEnc; i < sizeofEnc + 32; i++) msg[i] = digest[i - sizeofEnc];
+
+  send_str("Encrypted message:");
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeof(msg) , (char *)msg); 
 
   //send encrypted message
   return send_msg(RAD_INTF, SCEWL_ID, tgt_id, sizeof(msg), (char *)msg);
@@ -531,8 +534,6 @@ int main() {
       if (intf_avail(CPU_INTF)) { 
         // Read message from CPU
         len = read_msg(CPU_INTF, buf, &src_id, &tgt_id, sizeof(buf), 1);
-        send_str("CPU message:");
-        send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , buf); 
 
         if (tgt_id == SCEWL_BRDCST_ID) {
           handle_brdcst_send(buf, len);
@@ -551,9 +552,6 @@ int main() {
       if (intf_avail(RAD_INTF)) {
         // Read message from antenna
         len = read_msg(RAD_INTF, buf, &src_id, &tgt_id, sizeof(buf), 1);
-
-        send_str("Radio message:");
-        send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len , buf); 
         
         if (src_id != SCEWL_ID) { // ignore our own outgoing messages
           if (tgt_id == SCEWL_BRDCST_ID) {
