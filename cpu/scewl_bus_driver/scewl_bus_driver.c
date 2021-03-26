@@ -180,10 +180,14 @@ int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
     }
   } while (hdr.magicS != 'S' && hdr.magicC != 'C');
 
+  fprintf(stderr, "after do while...\n");
+
   // read rest of header
   if (full_read(sock, ((char *)&hdr) + 2, sizeof(hdr) - 2) < sizeof(hdr) - 2) {
     res = SCEWL_NO_MSG;
   }
+
+  fprintf(stderr, "after full_read...\n");
 
   // unpack header
   *src_id = hdr.src_id;
@@ -192,6 +196,8 @@ int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
   // read body
   max = hdr.len < n ? hdr.len : n;
   bread = full_read(sock, buf, max);
+
+  fprintf(stderr, "after read_body...\n");
 
   // throw away rest of message if too long
   for (int i = 0; hdr.len > max && i < hdr.len - max; i++) {
