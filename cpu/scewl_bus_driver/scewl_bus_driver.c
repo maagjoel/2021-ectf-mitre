@@ -164,7 +164,7 @@ int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
   // find header start
   do {
     hdr.magicC = 0;
-
+    fprintf(stderr, "BEFORE READ\n";
     // check for S
     if (read(sock, &hdr.magicS, 1) < 1) {
       fprintf(stderr, "magicS? %c\n", hdr.magicS);
