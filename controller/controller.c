@@ -58,6 +58,7 @@ int read_msg(intf_t *intf, char *data, scewl_id_t *src_id, scewl_id_t *tgt_id,
 
   scewl_hdr_t hdr;
   int read, max;
+  send_str( "in read msg function" );
 
   // clear buffer and header
   memset(&hdr, 0, sizeof(hdr));
@@ -391,10 +392,11 @@ int handle_faa_send(char* data, uint16_t len) {
 
 void handle_registration(char* msg) {
   scewl_sss_msg_t *sss_msg = (scewl_sss_msg_t *)msg;
+  send_str( "in handle registration" );
   if (sss_msg->op == SCEWL_SSS_REG && sss_register()) {
-    registered = 1;
+    registered = 1; send_str("registration sucesssssssssss");
   } else if (sss_msg->op == SCEWL_SSS_DEREG && sss_deregister()) {
-    registered = 0;
+    registered = 0; send_str("registration failureeeeeeeeeeeeeeeeeee" );
   }
 }
 
@@ -484,10 +486,14 @@ int main() {
   scewl_hdr_t hdr;
   uint16_t src_id, tgt_id;
 
+  send_str( "launched SED" );
+
   // initialize interfaces
   intf_init(CPU_INTF);
   intf_init(SSS_INTF);
   intf_init(RAD_INTF);
+
+  send_str( "interfaces initialized" );
 
   //seed randGen with provisioned Device Registration Number and msgCounter
   unsigned long randomizer = DATA1;
@@ -498,10 +504,12 @@ int main() {
   // serve forever
   while (1) {
     // register with SSS
+    send_str( "waiting to register" );
     read_msg(CPU_INTF, buf, &hdr.src_id, &hdr.tgt_id, sizeof(buf), 1);
 
     
     if (hdr.tgt_id == SCEWL_SSS_ID) {
+      send_str( "going to handle registration" );
       handle_registration(buf);
     }
 
