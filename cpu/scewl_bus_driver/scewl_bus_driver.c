@@ -144,6 +144,7 @@ int full_read(int sock, void *vbuf, int n) {
 
 int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
                size_t n, int blocking) {
+  fprintf(stderr, "in scewl_recv...\n");
   scewl_hdr_t hdr;
   int res=SCEWL_OK, max, bread, flags, dummy;
 
@@ -159,7 +160,7 @@ int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
   // clear buffer and header
   memset(&hdr, 0, sizeof(hdr));
   memset(buf, 0, n);
-
+  fprintf(stderr, "before do...\n");
   // find header start
   do {
     hdr.magicC = 0;
