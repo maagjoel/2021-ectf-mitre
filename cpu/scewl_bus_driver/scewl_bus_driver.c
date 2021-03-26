@@ -43,6 +43,7 @@ void scewl_init() {
   char *sock_path = "/socks/scewl_bus.sock";
   struct sockaddr_un addr;
   sock = socket(AF_UNIX, SOCK_STREAM, 0);
+  fprintf(stderr, "sock: %d\n", sock);
   if (sock < 1) {
     fprintf(logfp, "Bad socket! %d\n", sock);
     exit(-1);
