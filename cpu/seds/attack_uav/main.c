@@ -315,9 +315,8 @@ int main(void) {
 
   // only launch after registering and getting mission
   fprintf(stderr, FMT_MSG("Test Message") "\n");
-  scewl_register();
+  reg();
   scewl_send(SCEWL_FAA_ID, 8 , "helloguy");
-  dereg();
   fprintf(stderr, FMT_MSG("WE MADE IT") "\n");
   if (reg() && get_mission(&s)) {
     s.x = 0;

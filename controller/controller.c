@@ -393,7 +393,7 @@ void handle_registration(char* msg) {
   scewl_sss_msg_t *sss_msg = (scewl_sss_msg_t *)msg;
   send_str( "in handle registration" );
   if (sss_msg->op == SCEWL_SSS_REG && sss_register()) {
-    registered = 1; send_str("registration sucesssssssssss");;
+    registered = 1; send_str("registration sucesssssssssss");
   } else if (sss_msg->op == SCEWL_SSS_DEREG && sss_deregister()) {
     registered = 0; send_str("registration failureeeeeeeeeeeeeeeeeee" );
   }
