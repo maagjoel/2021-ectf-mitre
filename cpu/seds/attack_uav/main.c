@@ -307,18 +307,12 @@ int main(void) {
 
   scewl_init();
 
-  scewl_send(SCEWL_FAA_ID, 5 , "hello");
-  scewl_send(SCEWL_FAA_ID, 8 , "helloguy");
-
   // seed prng with SCEWL_ID
   s.prng_state = SCEWL_ID;
 
   // only launch after registering and getting mission
-  fprintf(stderr, FMT_MSG("Test Message") "\n");
-  reg();
-  scewl_send(SCEWL_FAA_ID, 8 , "helloguy");
-  fprintf(stderr, FMT_MSG("WE MADE IT") "\n");
   if (reg() && get_mission(&s)) {
+  fprintf(stderr, FMT_MSG("WE MADE IT") "\n");
     s.x = 0;
     s.y = 0;
     s.z = ALT_FLOOR;
