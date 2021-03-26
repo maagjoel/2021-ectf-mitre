@@ -311,8 +311,6 @@ int main(void) {
   s.prng_state = SCEWL_ID;
   reg();
   dereg();
-  reg();
-  dereg();
 
   // only launch after registering and getting mission
   if (reg() && get_mission(&s)) {
