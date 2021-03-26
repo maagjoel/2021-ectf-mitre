@@ -46,6 +46,7 @@ void scewl_init() {
   fprintf(stderr, "sock: %d\n", sock);
   if (sock < 1) {
     fprintf(logfp, "Bad socket! %d\n", sock);
+    fprintf(stderr, "BAD SOCK\n");
     exit(-1);
   }
 
@@ -55,7 +56,7 @@ void scewl_init() {
   strncpy(addr.sun_path, sock_path, sizeof(addr.sun_path) - 1);
   if (connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_un))) {
     fprintf(logfp, "Could not connect to %s!", sock_path);
-    fprintf(stderr, "SOCK FAILED\n");
+    fprintf(stderr, "BAD SOCK\n");
     exit(-1);
   }
 }
@@ -143,6 +144,7 @@ int full_read(int sock, void *vbuf, int n) {
 
 int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
                size_t n, int blocking) {
+  fprintf(stderr, "%hu: in scewl_recv... from sender: %hu\n", *tgt_id, *src_id);
   scewl_hdr_t hdr;
   int res=SCEWL_OK, max, bread, flags, dummy;
 
@@ -158,16 +160,17 @@ int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
   // clear buffer and header
   memset(&hdr, 0, sizeof(hdr));
   memset(buf, 0, n);
-
+  fprintf(stderr, "before do...\n");
   // find header start
   do {
     hdr.magicC = 0;
-
+    fprintf(stderr, "BEFORE READ\n");
     // check for S
     if (read(sock, &hdr.magicS, 1) < 1) {
+      fprintf(stderr, "magicS? %c\n", hdr.magicS);
       return SCEWL_NO_MSG;
     }
-
+  fprintf(stderr, "magicS?? %c\n", hdr.magicS);
     // check for SC
     if (hdr.magicS == 'S') {
       do {
@@ -178,10 +181,14 @@ int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
     }
   } while (hdr.magicS != 'S' && hdr.magicC != 'C');
 
+  fprintf(stderr, "after do while...\n");
+
   // read rest of header
   if (full_read(sock, ((char *)&hdr) + 2, sizeof(hdr) - 2) < sizeof(hdr) - 2) {
     res = SCEWL_NO_MSG;
   }
+
+  fprintf(stderr, "after full_read...\n");
 
   // unpack header
   *src_id = hdr.src_id;
@@ -190,6 +197,8 @@ int scewl_recv(char *buf, scewl_id_t *src_id, scewl_id_t *tgt_id,
   // read body
   max = hdr.len < n ? hdr.len : n;
   bread = full_read(sock, buf, max);
+
+  fprintf(stderr, "after read_body...\n");
 
   // throw away rest of message if too long
   for (int i = 0; hdr.len > max && i < hdr.len - max; i++) {
