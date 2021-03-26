@@ -391,10 +391,11 @@ int handle_faa_send(char* data, uint16_t len) {
 
 void handle_registration(char* msg) {
   scewl_sss_msg_t *sss_msg = (scewl_sss_msg_t *)msg;
+  fprintf(stderr, "in handle registration\n" );
   if (sss_msg->op == SCEWL_SSS_REG && sss_register()) {
-    registered = 1;
+    registered = 1; fprintf(stderr, "registration successssssssssssssssss\n" );
   } else if (sss_msg->op == SCEWL_SSS_DEREG && sss_deregister()) {
-    registered = 0;
+    registered = 0; fprintf(stderr, "registration failureeeeeeeeeeeeeeeeeee" );
   }
 }
 
