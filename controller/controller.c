@@ -160,7 +160,7 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
   (void)tc_hmac_final(digest, 32, &h);
 
      send_str("Calculated HMAC:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, digest);
+  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, (char *)digest);
 
   if (!_compare(digest, hmac, 32)) //Check to determine if HMAC calulated matches the one sent
   {
@@ -191,7 +191,7 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
       //remove padding
       for (i = sizeofDec - 1; decrypted[i] == '#'; i--,sizeofDec--) decrypted[i] = '\0';
       sizeofDec -= 10; //discard unique messageID
-      
+
       send_str("Decrypted Message");
       send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeofDec, (char *)decrypted);
       
