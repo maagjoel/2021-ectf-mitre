@@ -134,12 +134,6 @@ int send_msg(intf_t *intf, scewl_id_t src_id, scewl_id_t tgt_id, uint16_t len, c
 
 int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
 
-    send_str("SCEWL_ID:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 2, (char *)SCEWL_ID);
-
-   send_str("Recieved Message:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len, data);
-
   // Check is message exceeds max length and discard if so
   if (len > maxMsgRecLength) {
     memset(data, 0, len);
@@ -154,9 +148,6 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
   for (i = 0; i < n; i++) encrypted[i] = data[i];
   for (i = n; i < n + 32; i++) hmac[i - n] = data[i];
 
-  send_str("Encryption message for calculating HMAC being recieved");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, n, (char *)encrypted);
-
   // Calculate HMAC based on encryted text
   struct tc_hmac_state_struct h;
   uint8_t digest[32];
@@ -166,18 +157,11 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
   (void)tc_hmac_update(&h, (char *)encrypted, n);
   (void)tc_hmac_final(digest, 32, &h);
 
-  send_str("HMAC Key being used for recieving:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 16, (char *)DT_recv_hmac_key);
-
-     send_str("Calculated HMAC:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, (char *)digest);
-
   if (!_compare(digest, hmac, 32)) //Check to determine if HMAC calulated matches the one sent
   {
       // Check if MAC matches previously recieved MACs. Ignore if the same.
       for (int i = 0; i < 16; i++) {
         if (!_compare(digest, DTdigestArray[i], 32)) {
-          send_str("Repeated message!!");
           return 0;
           }
       } 
@@ -201,24 +185,19 @@ int handle_scewl_recv(char* data, scewl_id_t src_id, uint16_t len) {
       //remove padding
       for (i = sizeofDec - 1; decrypted[i] == '#'; i--,sizeofDec--) decrypted[i] = '\0';
       sizeofDec -= 10; //discard unique messageID
-
-      send_str("Decrypted Message");
-      send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeofDec, (char *)decrypted);
       
       return send_msg(CPU_INTF, src_id, SCEWL_ID, sizeofDec, (char *)decrypted);
   }
   else
   {
     //disregard message if not authentic
-    send_str("HMAC doesn't match. disgarding message.");
+    //send_str("HMAC doesn't match. disgarding message.");
     return 0;
   }  
 
 }
 
 int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
-  send_str("Origional Message:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, len, data);
   
   //check if message exceeds buffer length and reduces to message to small length if so
   if (len > maxMsgLength) {
@@ -228,9 +207,6 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
 
   msgCounter++; //increment message counter for unique message ID
   DT_hmac_key[11] = (u_int8_t)(tgt_id % 256); //customize HMAC for specific target SED
-
-  send_str("TARGET_ID:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 2, (char *)tgt_id);
 
   //append message with unique message ID
   char tempAry[10]; 
@@ -260,9 +236,6 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   tc_cbc_mode_encrypt(encrypted, sizeofEnc,
 	(uint8_t *)data, len , iv_buffer, &a);
 
-  send_str("Encryption message for calculating HMAC being sent");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeofEnc, (char *)encrypted);
-
   //calulate HMAC of encryoted data
   struct tc_hmac_state_struct h;
   uint8_t digest[32];
@@ -272,24 +245,12 @@ int handle_scewl_send(char* data, scewl_id_t tgt_id, uint16_t len) {
   (void)tc_hmac_update(&h, (char *)encrypted, sizeofEnc);
   (void)tc_hmac_final(digest, 32, &h);
 
-  send_str("HMAC Key being used for sending:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 16, (char *)DT_hmac_key);
-
-  send_str("Sent HMAC:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 32, (char *)digest);
-
 
   //copy ciphertext and HMAC to new array
   uint8_t msg[sizeofEnc + 32];
   int i;
   for (i = 0; i < sizeofEnc; i++) msg[i] = encrypted[i];
   for (i = sizeofEnc; i < sizeofEnc + 32; i++) msg[i] = digest[i - sizeofEnc];
-
-  send_str("Encrypted Message:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, sizeof(msg), (char *)msg);
-
-  //reset DT_hmac_key
-  DT_hmac_key[11] = (u_int8_t)(SCEWL_ID % 256);
 
   //send encrypted message
   return send_msg(RAD_INTF, SCEWL_ID, tgt_id, sizeof(msg), (char *)msg);
@@ -466,16 +427,10 @@ int sss_register() {
     BC_hmac_key[i] = msg2[20 + i]; //get HMAC key from server response
     iv[i] = msg2[36 + i]; //get initialization vector from server response
   }
-  DT_hmac_key[11] = (u_int8_t)(SCEWL_ID % 256); //personalize direct transmission key based on provisoned ID
-  memcpy(DT_recv_hmac_key, DT_hmac_key, 16);
+  memcpy(DT_recv_hmac_key, DT_hmac_key,16);
+  DT_recv_hmac_key[11] = (u_int8_t)(SCEWL_ID % 256); //personalize direct transmission key based on provisoned ID
   tenDigitSerial = DATA1; //set serial equal to provisioned registration number 
   while (tenDigitSerial < 1000000000) tenDigitSerial *= 2; //increment if less than 10 digits
-  send_str("AES KEY:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 16, (char *)key);
-  send_str("DT HMAC KEY:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 16, (char *)DT_hmac_key);
-  send_str("BC HMAC KEY:");
-  send_msg(RAD_INTF, SCEWL_ID, SCEWL_FAA_ID, 16, (char *)BC_hmac_key);
 
 
   // notify CPU of response
@@ -505,13 +460,11 @@ int sss_deregister() {
   }
 
   //remove stored encryption keys on deregistration
-  for (int i = 0; i < 16; i++ ) { 
-    key[i] = badKey[i]; 
-    BC_hmac_key[i] = badKey[i]; 
-    DT_hmac_key[i] = badKey[i]; 
-    DT_recv_hmac_key[i] = badKey[i];
-    iv[i] = badKey[i]; 
-  }
+  memcpy(key,badKey,16);
+  memcpy(BC_hmac_key,badKey,16);
+  memcpy(DT_recv_hmac_key,badKey,16);
+  memcpy(DT_hmac_key,badKey,16);
+  memcpy(iv,badKey,16);
   tenDigitSerial = 0; // reset serial num
 
   // receive response
