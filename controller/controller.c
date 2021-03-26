@@ -58,6 +58,7 @@ int read_msg(intf_t *intf, char *data, scewl_id_t *src_id, scewl_id_t *tgt_id,
 
   scewl_hdr_t hdr;
   int read, max;
+  send_str( "in read msg function" );
 
   // clear buffer and header
   memset(&hdr, 0, sizeof(hdr));
@@ -503,6 +504,7 @@ int main() {
 
     
     if (hdr.tgt_id == SCEWL_SSS_ID) {
+      send_str( "going to handle registration" );
       handle_registration(buf);
     }
 
