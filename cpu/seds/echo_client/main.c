@@ -72,6 +72,29 @@ int main(void) {
   scewl_init();
 
   // register
+      fprintf(log, "Client Registering...\n");
+  if (scewl_register() != SCEWL_OK) {
+    fprintf(log, "BAD REGISTRATION! Reregistering...\n");
+    if (scewl_deregister() != SCEWL_OK) {
+      fprintf(log, "BAD DEREGISTRATION!\n");
+      return 1;
+    }
+    if (scewl_register() != SCEWL_OK) {
+      fprintf(log, "BAD REGISTRATION! CANNOT RECOVER\n");
+      return 1;
+    }
+  }
+
+  // deregister
+    fprintf(log, "Client Deregistering...\n");
+  if (scewl_deregister() != SCEWL_OK) {
+    fprintf(log, "BAD DEREGISTRATION!\n");
+  }
+  else fprintf(log, "SUCCESSFUL DEREGISTRATION!\n");
+
+
+  // register
+      fprintf(log, "Client Registering...\n");
   if (scewl_register() != SCEWL_OK) {
     fprintf(log, "BAD REGISTRATION! Reregistering...\n");
     if (scewl_deregister() != SCEWL_OK) {
